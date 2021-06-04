@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = (os.environ.get('IS_IN_DEBUG') == 'True')
+DEBUG = os.environ.get('IS_IN_DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
