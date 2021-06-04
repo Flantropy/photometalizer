@@ -10,11 +10,12 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f' {username}, Your account has been created! You are now able to log-in.')
-            return redirect('home')
+            messages.success(request, f' {username}, ваш аккаунт успешно создан.')
+            return redirect('login')
     else:
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form })
+
 
 @login_required
 def profile(request):
@@ -26,7 +27,7 @@ def profile(request):
         if user_update_form.is_valid() and profile_update_form.is_valid():
             user_update_form.save()
             profile_update_form.save()
-            messages.success(request, f'Your account has been updated!')
+            messages.success(request, f'Ваш профиль обновлен')
             return redirect('profile')
     else:
         user_update_form = UserUpdateForm(instance=request.user)
