@@ -20,7 +20,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'storages',
+    'crispy_forms',
 
+    'photometa.apps.PhotometaConfig'
 ]
 
 MIDDLEWARE = [
@@ -82,7 +84,14 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'photometa/static',
+]
+
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
