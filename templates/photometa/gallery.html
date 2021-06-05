@@ -1,0 +1,25 @@
+{% extends 'photometa/base.html' %}
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <div class="media-body">
+                <h3 class="account-heading">{{ user.username }}, это ваша галерея</h3>
+                <h4>Тут вы можете управлять своими фотографиями</h4>
+            </div>
+        </div>
+        <div class="div1">
+            {% for img in user_photos %}
+                <h4>Hello</h4>
+            {% endfor %}
+        </div>
+        <form method='POST' enctype='multipart/form-data'>
+            {% csrf_token %}
+            <fieldset class='form-group'>
+                {{ photo_upload_form}}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Загрузить</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

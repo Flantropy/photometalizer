@@ -54,14 +54,16 @@
             {% endif %}
             {% block content %}{% endblock %}
         </div>
+        {% if user.is_authenticated %}
         <div class="col-md-4">
             <div class="content-section">
                 <ul class="list-group">
-                    <li class="list-group-item list-group-item-light">Мои фото</li>
+                    <li class="list-group-item list-group-item-light"><a href="{% url 'gallery' %}">Мои фото</a></li>
                     <li class="list-group-item list-group-item-light">Настройки</li>
                 </ul>
             </div>
         </div>
+        {% endif %}
     </div>
 </main>
 
