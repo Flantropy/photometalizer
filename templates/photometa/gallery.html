@@ -1,6 +1,7 @@
 {% extends 'photometa/base.html' %}
 
 {% block content %}
+
     <div class="content-section">
         <div class="media">
             <div class="media-body">
@@ -8,11 +9,18 @@
                 <h4>Тут вы можете управлять своими фотографиями</h4>
             </div>
         </div>
-        {% for path in user_photos_urls %}
-            <article class="media content-section">
-                <img src="{{ path }}">
-            </article>
-        {% endfor %}
+        <div class="row">
+            <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                {% for path in user_photos_urls %}
+                    <a target="_blank" href="{{ path }}">
+                        <img src="{{ path }}"
+                             class="w-20 shadow-1-strong rounded mb-4"
+                             alt=""
+                             width="35%">
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
         <form method='POST' enctype='multipart/form-data'>
             {% csrf_token %}
             <fieldset class='form-group'>
