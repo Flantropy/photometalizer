@@ -1,8 +1,7 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
-from users.models import Image
 from .forms import ImageUploadForm
-from users.models import Image
-
+from .models import Image
 
 def home(request):
     return render(request, 'photometa/base.html')
@@ -13,14 +12,15 @@ def gallery(request):
         photo_upload_form = ImageUploadForm(
             request.POST,
             request.FILES,
-            instance=Image.objects.create(profile=request.user.profile))
+            instance=Image.objects.create(owner=request.user))
         if photo_upload_form.is_valid():
             photo_upload_form.save()
+            messages.success(request, f'Ваши фото успешно добавлены')
             return redirect('gallery')
     else:
         photo_upload_form = ImageUploadForm()
 
-    user_photos = Image.objects.filter(profile__user__username=request.user)
+    user_photos = Image.objects.filter(owner=request.user)
     context = {
         'user_photos': user_photos,
         'photo_upload_form': photo_upload_form
