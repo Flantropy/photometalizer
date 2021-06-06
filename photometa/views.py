@@ -21,8 +21,9 @@ def gallery(request):
         photo_upload_form = ImageUploadForm()
 
     user_photos = Image.objects.filter(owner=request.user)
+    user_photos_urls = [obj.img.url for obj in user_photos]
     context = {
-        'user_photos': user_photos,
+        'user_photos_urls': user_photos_urls,
         'photo_upload_form': photo_upload_form
     }
     return render(request, 'photometa/gallery.html', context)
