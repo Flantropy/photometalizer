@@ -9,7 +9,7 @@
         </div>
         <div class="row">
             <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-                {% for image in images %}
+                {% for image in object_list %}
                     <a href="{% url 'photo-detail' image.id %}">
                         <img src="{{ image.img.url }}"
                              class="w-20 shadow-1-strong rounded mb-4"
