@@ -1,7 +1,5 @@
 {% extends 'photometa/base.html' %}
-
 {% block content %}
-
     <div class="content-section">
         <div class="media">
             <div class="media-body">
@@ -11,9 +9,9 @@
         </div>
         <div class="row">
             <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-                {% for path in user_photos_urls %}
-                    <a target="_blank" href="{{ path }}">
-                        <img src="{{ path }}"
+                {% for image in images %}
+                    <a href="{% url 'photo-detail' image.id %}">
+                        <img src="{{ image.img.url }}"
                              class="w-20 shadow-1-strong rounded mb-4"
                              alt=""
                              width="35%">
@@ -21,14 +19,5 @@
                 {% endfor %}
             </div>
         </div>
-        <form method='POST' enctype='multipart/form-data'>
-            {% csrf_token %}
-            <fieldset class='form-group'>
-                {{ photo_upload_form.as_p }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Загрузить</button>
-            </div>
-        </form>
     </div>
 {% endblock content %}

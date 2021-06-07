@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.views.generic import DetailView, ListView
 from .forms import ImageUploadForm
 from .models import Image
+
 
 def home(request):
     return render(request, 'photometa/base.html')
@@ -21,9 +23,23 @@ def gallery(request):
         photo_upload_form = ImageUploadForm()
 
     user_photos = Image.objects.filter(owner=request.user)
-    user_photos_urls = [obj.img.url for obj in user_photos]
+    user_photos = [obj.img for obj in user_photos if obj.img]
     context = {
-        'user_photos_urls': user_photos_urls,
+        'user_photos': user_photos,
         'photo_upload_form': photo_upload_form
     }
-    return render(request, 'photometa/gallery.html', context)
+    return render(request, 'photometa/image_list.html', context)
+
+
+class PhotoListView(ListView):
+    model = Image
+    queryset = Image.objects.all()
+    extra_context = {
+        'images': Image.objects.all()
+    }
+
+
+class PhotoDetailView(DetailView):
+    model = Image
+    template_name = 'photometa/photo_detail.html'
+    context_object_name = 'photo'
