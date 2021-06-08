@@ -5,6 +5,7 @@ from .views import (
     ImageDetailView,
     ImageCreateView,
     ImageDeleteView,
+    image_meta,
 )
 
 
@@ -14,5 +15,6 @@ urlpatterns = [
     path('photos/', ImageListView.as_view(), name='photos'),
     path('photos/<int:pk>/', ImageDetailView.as_view(), name='photo-detail'),
     path('photos/<int:pk>/delete', ImageDeleteView.as_view(), name='photo-delete'),
+    path('photos/<int:pk>/metadata', image_meta, name='photo-metadata'),
 
 ]

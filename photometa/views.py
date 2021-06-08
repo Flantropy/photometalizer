@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -5,11 +6,14 @@ from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
-    DeleteView
+    DeleteView,
+    FormView
 )
 
 from .models import Image
 from .forms import ImageUploadForm
+from .utils import retrieve_exif
+
 
 
 def home(request):
@@ -44,3 +48,13 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
     def test_func(self):
         image = self.get_object()
         return self.request.user == image.owner
+
+def image_meta(request, pk):
+    photo = Image.objects.get(pk=pk)
+    exif = retrieve_exif(photo.img.path)
+    context = {
+        'photo': photo,
+        'mypk': pk,
+        'exif': exif,
+    }
+    return render(request, 'photometa/image_meta.html', context)
