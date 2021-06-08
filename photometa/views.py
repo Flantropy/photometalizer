@@ -34,5 +34,13 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        form.save()
         return super().form_valid(form)
+
+
+class ImageDeleteView(LoginRequiredMixin, DeleteView):
+    model = Image
+    success_url = reverse_lazy('photos')
+
+    def test_func(self):
+        image = self.get_object()
+        return self.request.user == image.owner
