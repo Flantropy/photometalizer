@@ -1,20 +1,17 @@
-import os
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.core.files.base import ContentFile
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     DeleteView,
-    FormView
 )
-
+from exif import Image as EXIFImage
 from .models import Image
 from .forms import ImageUploadForm
-from .utils import retrieve_exif, clear_meta
 
 
 def home(request):
@@ -52,8 +49,11 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def image_meta(request, pk):
-    photo = Image.objects.get(pk=pk)
-    exif = retrieve_exif(photo.img.path)
+    obj = Image.objects.get(pk=pk)
+    photo = obj.img.read()
+    photo_raw_exif = EXIFImage(photo)
+    exif = photo_raw_exif.get_all()
+    exif = zip(exif.keys(), exif.values())
     context = {
         'photo': photo,
         'mypk': pk,
@@ -63,8 +63,11 @@ def image_meta(request, pk):
 
 
 def image_meta_editor(request, pk):
-    photo = Image.objects.get(pk=pk)
-    exif = retrieve_exif(photo.img.path)
+    obj = Image.objects.get(pk=pk)
+    photo = obj.img.read()
+    photo_raw_exif = EXIFImage(photo)
+    exif = photo_raw_exif.get_all()
+    exif = zip(exif.keys(), exif.values())
     context = {
         'all_tags': exif,
     }
@@ -72,10 +75,18 @@ def image_meta_editor(request, pk):
 
 
 def image_meta_clear(request, pk):
-    photo = Image.objects.get(pk=pk)
     try:
-        clear_meta(photo.img.path)
+        obj = Image.objects.get(pk=pk)
+        photo = obj.img.read()
+        image = EXIFImage(photo)
+        image.delete_all()
+        new_file = image.get_file()
+        new_obj = Image()
+        new_obj.owner = request.user
+        new_obj.img.save(name='new_image.jpg', content=ContentFile(new_file))
+        new_obj.save()
+        obj.delete()
     except:
-        messages.error(request, f'Что-то пошло не так')
-    messages.success(request, f'Метаданные для {photo} удалены')
+        messages.error(request, 'Error')
+    messages.success(request, 'Метаданные удалены')
     return redirect('photos')

@@ -1,13 +1,10 @@
 from exif import Image as EXIFImage
 
 
-def retrieve_exif(path):
-    with open(path, 'rb') as image_file:
-        image = EXIFImage(image_file)
-
+def format_exif(raw_exf: EXIFImage):
     exif = []
-    for tag in image.list_all():
-        exif.append({tag: image.get(str(tag))})
+    for tag in raw_exf.list_all():
+        exif.append({tag: raw_exf.get(str(tag))})
     return exif
 
 
@@ -20,5 +17,4 @@ def clear_meta(path):
 
 
 if __name__ == '__main__':
-    data = retrieve_exif(r'C:\Users\User\PycharmProjects\pmdm\media\profile_pics\Canon.jpg')
-    print(data)
+    print('hello')
