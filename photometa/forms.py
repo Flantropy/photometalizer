@@ -1,9 +1,15 @@
-from django import forms
+from django.forms import Form, ModelForm
+from django.forms.fields import *
 from .models import Image
 
 
 
-class ImageUploadForm(forms.ModelForm):
+class ImageUploadForm(ModelForm):
     class Meta:
         model = Image
         fields = ['img']
+
+
+class ExifEditorForm(Form):
+    title = CharField()
+    email = EmailField()

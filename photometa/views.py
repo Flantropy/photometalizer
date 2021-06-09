@@ -11,7 +11,7 @@ from django.views.generic import (
 )
 from exif import Image as EXIFImage
 from .models import Image
-from .forms import ImageUploadForm
+from .forms import ImageUploadForm, ExifEditorForm
 
 
 def home(request):
@@ -63,6 +63,7 @@ def image_meta(request, pk):
 
 
 def image_meta_editor(request, pk):
+    form = ExifEditorForm()
     obj = Image.objects.get(pk=pk)
     photo = obj.img.read()
     photo_raw_exif = EXIFImage(photo)
@@ -70,6 +71,7 @@ def image_meta_editor(request, pk):
     exif = zip(exif.keys(), exif.values())
     context = {
         'all_tags': exif,
+        'form': form,
     }
     return render(request, 'photometa/image_meta_editor.html', context)
 
@@ -87,6 +89,7 @@ def image_meta_clear(request, pk):
         new_obj.save()
         obj.delete()
     except:
-        messages.error(request, 'Error')
-    messages.success(request, 'Метаданные удалены')
+        messages.warning(request, 'Что-то пошло не так')
+    else:
+        messages.success(request, 'Метаданные удалены')
     return redirect('photos')
