@@ -1,4 +1,6 @@
 import os
+
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -12,8 +14,7 @@ from django.views.generic import (
 
 from .models import Image
 from .forms import ImageUploadForm
-from .utils import retrieve_exif
-
+from .utils import retrieve_exif, clear_meta
 
 
 def home(request):
@@ -49,6 +50,7 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
         image = self.get_object()
         return self.request.user == image.owner
 
+
 def image_meta(request, pk):
     photo = Image.objects.get(pk=pk)
     exif = retrieve_exif(photo.img.path)
@@ -58,3 +60,22 @@ def image_meta(request, pk):
         'exif': exif,
     }
     return render(request, 'photometa/image_meta.html', context)
+
+
+def image_meta_editor(request, pk):
+    photo = Image.objects.get(pk=pk)
+    exif = retrieve_exif(photo.img.path)
+    context = {
+        'all_tags': exif,
+    }
+    return render(request, 'photometa/image_meta_editor.html', context)
+
+
+def image_meta_clear(request, pk):
+    photo = Image.objects.get(pk=pk)
+    try:
+        clear_meta(photo.img.path)
+    except:
+        messages.error(request, f'Что-то пошло не так')
+    messages.success(request, f'Метаданные для {photo} удалены')
+    return redirect('photos')

@@ -1,0 +1,24 @@
+{% extends 'photometa/base.html' %}
+
+{% block content %}
+    <div class='content-section' style="">
+        <form method='POST' enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class='form-group'>
+                <legend class='border-bottom mb-4'>Редактирование метаданных</legend>
+                {% for i in all_tags %}
+                    <label for="{{ i }}">
+                        {{ i }}
+                        <input type="text" id="{{ i }}" class="form-row">
+                    </label>
+                    <small class="form-text text-muted">
+                        Hint text
+                    </small>
+                {% endfor %}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Отправить</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

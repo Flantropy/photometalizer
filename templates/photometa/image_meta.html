@@ -5,7 +5,10 @@
         <div class="article-metadata">
             <h1><img src="{{ photo.img.url }}"></h1>
             <h2>{{ mypk }}</h2>
-            <h3>{{ exif }}</h3>
+            {% for i in exif %}
+                <p>{{ i }}</p>
+            {% endfor %}
+
             {#            <div>#}
             {#                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'photo-metadata' object.id %}">Показать метаданные</a>#}
             {#                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Редактировать</a>#}
