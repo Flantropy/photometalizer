@@ -33,10 +33,10 @@ class ImageUploadForm(ModelForm):
 
 
 class ExifEditorForm(Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for tag in get_all_exif_tags():
-            self.fields[tag] = CharField(help_text='help', required=False)
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for tag in get_all_exif_tags():
+    #         self.fields[tag] = CharField(help_text='help', required=False)
 
     # image_width = CharField(help_text='Hint', required=False)
     # image_height = CharField(help_text='Hint', required=False)
@@ -63,7 +63,7 @@ class ExifEditorForm(Form):
     # reference_black_white = CharField(help_text='Hint', required=False)
     # datetime = CharField(help_text='Hint', required=False)
     # image_description = CharField(help_text='Hint', required=False)
-    # make = CharField(help_text='Hint', required=False)
+    make = CharField(help_text='Hint', required=False)
     # model = CharField(help_text='Hint', required=False)
     # software = CharField(help_text='Hint', required=False)
     # artist = CharField(help_text='Hint', required=False)
