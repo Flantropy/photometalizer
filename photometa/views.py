@@ -54,6 +54,7 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def image_meta(request, pk):
+    # TODO Generalize logic of working with files and retrieving/setting exif
     obj = Image.objects.get(pk=pk)
     photo = obj.img.read()
     photo_raw_exif = EXIFImage(photo)
@@ -68,7 +69,8 @@ def image_meta(request, pk):
 
 
 def image_meta_editor(request, pk):
-    form = ExifEditorForm()
+    # TODO write a function to get initial values from existing image exif
+    form = ExifEditorForm(initial={'make': 'initial make'})
     if request.method == 'POST':
         form = ExifEditorForm(request.POST)
         obj = Image.objects.get(pk=pk)
