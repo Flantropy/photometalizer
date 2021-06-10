@@ -1,15 +1,30 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from django.forms import Form, ModelForm
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.forms import Form, ModelForm, FileInput
 from django.forms.fields import *
 from .models import Image
 from .utils import get_all_exif_tags
 
 
+def validate_image_size(image: InMemoryUploadedFile):
+    print(image.size)
+    file_size = image.size
+    limit = 1 * 1024 * 1024  # 1M
+    if file_size > limit:
+        raise ValidationError(f'Максимальный размер файла {limit // (1024 * 1024)}M')
+
+
 class ImageUploadForm(ModelForm):
+    ALLOWED_EXTENSIONS = ['jpg', 'jpeg']
     img = ImageField(
         label='Фото',
-        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg'])],
-        help_text='Доступные расщирения: jpg, jpeg',
+        widget=FileInput(attrs={'multiple': True}),
+        validators=[
+            FileExtensionValidator(allowed_extensions=ALLOWED_EXTENSIONS),
+            validate_image_size
+        ],
+        help_text=f'Доступные расщирения: {ALLOWED_EXTENSIONS}',
     )
 
     class Meta:
