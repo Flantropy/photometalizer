@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -38,6 +39,10 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        messages.warning(self.request, form.errors['img'])
+        return super().form_invalid(form)
+
 
 class ImageDeleteView(LoginRequiredMixin, DeleteView):
     model = Image
@@ -64,13 +69,33 @@ def image_meta(request, pk):
 
 def image_meta_editor(request, pk):
     form = ExifEditorForm()
-    obj = Image.objects.get(pk=pk)
-    photo = obj.img.read()
-    photo_raw_exif = EXIFImage(photo)
-    exif = photo_raw_exif.get_all()
-    exif = zip(exif.keys(), exif.values())
+    if request.method == 'POST':
+        form = ExifEditorForm(request.POST)
+        obj = Image.objects.get(pk=pk)
+        photo = obj.img.read()
+        image = EXIFImage(photo)
+        if form.is_valid():
+            for key, value in form.cleaned_data.items():
+                try:
+                    image.set(key, value)
+                except Exception as e:
+                    print(e, e.__class__)
+
+            try:
+                new_file = image.get_file()
+                new_obj = Image()
+                new_obj.owner = request.user
+                new_obj.img.save(name='new_image.jpg', content=ContentFile(new_file))
+                new_obj.save()
+                obj.delete()
+            except Exception as e:
+                messages.warning(request, 'fail')
+                print(e, e.__class__)
+            else:
+                messages.success(request, 'edited!')
+                return redirect('photos')
+
     context = {
-        'all_tags': exif,
         'form': form,
     }
     return render(request, 'photometa/image_meta_editor.html', context)
