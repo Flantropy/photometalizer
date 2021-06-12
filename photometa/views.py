@@ -8,9 +8,11 @@ from django.views.generic import (
     CreateView,
     DeleteView,
 )
+
 from exif import Image as EXIFImage
-from .models import Image
+
 from .forms import ImageUploadForm, ExifEditorForm
+from .models import Image
 from .utils import get_exif, safe_clear, write_image_with_new_meta
 
 
@@ -36,6 +38,7 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        messages.success(self.request, 'Фото добавлено')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -100,4 +103,17 @@ def image_meta_clear(request, pk):
         messages.warning(request, 'Что-то пошло не так')
     else:
         messages.success(request, 'Метаданные удалены')
+    return redirect('photos')
+
+
+def delete_meta_for_all_user_photos(request):
+    queryset = Image.objects.filter(owner=request.user)
+    for i in queryset:
+        photo = i.img.read()
+        image = EXIFImage(photo)
+        safe_clear(image)
+        write_image_with_new_meta(request, image)
+        i.delete()
+
+    messages.success(request, 'Метаданные удалены на всех ваших фото')
     return redirect('photos')
