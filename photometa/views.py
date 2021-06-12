@@ -13,6 +13,7 @@ from django.views.generic import (
 from exif import Image as EXIFImage
 from .models import Image
 from .forms import ImageUploadForm, ExifEditorForm
+from .utils import get_exif, safe_clear
 
 
 def home(request):
@@ -56,32 +57,35 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
 def image_meta(request, pk):
     # TODO Generalize logic of working with files and retrieving/setting exif
     obj = Image.objects.get(pk=pk)
-    photo = obj.img.read()
-    photo_raw_exif = EXIFImage(photo)
-    exif = photo_raw_exif.get_all()
-    exif = zip(exif.keys(), exif.values())
+    exif = get_exif(obj)
     context = {
-        'photo': photo,
-        'mypk': pk,
-        'exif': exif,
+        'photo': obj,
+        'exif': exif.items(),
     }
     return render(request, 'photometa/image_meta.html', context)
 
 
 def image_meta_editor(request, pk):
     # TODO write a function to get initial values from existing image exif
-    form = ExifEditorForm(initial={'make': 'initial make'})
+    form = ExifEditorForm(
+        initial={
+            'make': 'initmake',
+            'white_balance': 0,
+            'software': 'initsoft'
+        }
+    )
     if request.method == 'POST':
         form = ExifEditorForm(request.POST)
         obj = Image.objects.get(pk=pk)
-        photo = obj.img.read()
-        image = EXIFImage(photo)
+        image = EXIFImage(obj.img.read())
         if form.is_valid():
             for key, value in form.cleaned_data.items():
+                print(f'key = {key} --- value = {value}')
                 try:
+                    print(image.list_all())
                     image.set(key, value)
-                except Exception as e:
-                    print(e, e.__class__)
+                except:
+                    print('smtww')
 
             try:
                 new_file = image.get_file()
@@ -108,7 +112,7 @@ def image_meta_clear(request, pk):
         obj = Image.objects.get(pk=pk)
         photo = obj.img.read()
         image = EXIFImage(photo)
-        image.delete_all()
+        safe_clear(image)
         new_file = image.get_file()
         new_obj = Image()
         new_obj.owner = request.user

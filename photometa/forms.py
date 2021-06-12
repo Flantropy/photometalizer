@@ -5,6 +5,7 @@ from django.forms import Form, ModelForm, FileInput
 from django.forms.fields import *
 from .models import Image
 from .utils import get_all_exif_tags
+from exif import WhiteBalance
 
 
 def validate_image_size(image: InMemoryUploadedFile):
@@ -33,11 +34,11 @@ class ImageUploadForm(ModelForm):
 
 
 class ExifEditorForm(Form):
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     for tag in get_all_exif_tags():
-    #         self.fields[tag] = CharField(help_text='help', required=False)
 
+    make = CharField(help_text='Hint', required=False)
+    white_balance = ChoiceField(choices=[(x.value, x.name) for x in WhiteBalance],
+                                help_text='Hint',
+                                required=False)
     # image_width = CharField(help_text='Hint', required=False)
     # image_height = CharField(help_text='Hint', required=False)
     # bits_per_sample = CharField(help_text='Hint', required=False)
@@ -63,7 +64,6 @@ class ExifEditorForm(Form):
     # reference_black_white = CharField(help_text='Hint', required=False)
     # datetime = CharField(help_text='Hint', required=False)
     # image_description = CharField(help_text='Hint', required=False)
-    make = CharField(help_text='Hint', required=False)
     # model = CharField(help_text='Hint', required=False)
     # software = CharField(help_text='Hint', required=False)
     # artist = CharField(help_text='Hint', required=False)
@@ -133,7 +133,6 @@ class ExifEditorForm(Form):
     # cfa_pattern = CharField(help_text='Hint', required=False)
     # custom_rendered = CharField(help_text='Hint', required=False)
     # exposure_mode = CharField(help_text='Hint', required=False)
-    # white_balance = CharField(help_text='Hint', required=False)
     # digital_zoom_ratio = CharField(help_text='Hint', required=False)
     # focal_length_in_35mm_film = CharField(help_text='Hint', required=False)
     # scene_capture_type = CharField(help_text='Hint', required=False)
