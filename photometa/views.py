@@ -17,7 +17,10 @@ from .utils import get_exif, safe_clear, write_image_with_new_meta
 
 
 def home(request):
-    return render(request, 'photometa/base.html')
+    return render(request, 'photometa/home.html')
+
+def about(request):
+    return render(request, 'photometa/about.html')
 
 
 class ImageListView(LoginRequiredMixin, ListView):

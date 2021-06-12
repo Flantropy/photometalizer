@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.forms import Form, ModelForm, FileInput
+from django.forms import Form, ModelForm, FileInput, DateTimeInput
 from django.forms.fields import *
 from .models import Image
 from exif import (
@@ -9,7 +9,7 @@ from exif import (
     ColorSpace,
     ExposureMode,
     SceneCaptureType,
-)
+    SensingMethod, MeteringMode)
 
 
 def validate_image_size(image: InMemoryUploadedFile):
@@ -39,6 +39,9 @@ class ImageUploadForm(ModelForm):
 
 class ExifEditorForm(Form):
     make = CharField(help_text='Hint', required=False)
+    datetime = CharField(help_text='YYYY:MM:DD HH:MM:SS',  required=False)
+    datetime_original = CharField(help_text='YYYY:MM:DD HH:MM:SS', required=False)
+    datetime_digitized = CharField(help_text='YYYY:MM:DD HH:MM:SS', required=False)
     white_balance = TypedChoiceField(
         coerce=int,
         choices=[(x.value, x.name) for x in WhiteBalance],
@@ -62,8 +65,29 @@ class ExifEditorForm(Form):
         choices=[(x.value, x.name) for x in SceneCaptureType],
         help_text='Hint',
         required=False)
-    # x_resolution = FloatField(help_text='Hint', required=False)
-    # y_resolution = FloatField(help_text='Hint', required=False)
+    x_resolution = FloatField(help_text='Hint', required=False)
+    y_resolution = FloatField(help_text='Hint', required=False)
+    digital_zoom_ratio = FloatField(help_text='Hint', required=False)
+    custom_rendered = IntegerField(help_text='Hint', required=False)
+    sensing_method = TypedChoiceField(
+        coerce=int,
+        choices=[(x.value, x.name) for x in SensingMethod],
+        help_text='Hint',
+        required=False)
+    metering_mode = TypedChoiceField(
+        coerce=int,
+        choices=[(x.value, x.name) for x in MeteringMode],
+        help_text='Hint',
+        required=False)
+    compressed_bits_per_pixel = FloatField(help_text='Hint', required=False)
+    shutter_speed_value = FloatField(help_text='Hint', required=False)
+    aperture_value = FloatField(help_text='Hint', required=False)
+    brightness_value = FloatField(help_text='Hint', required=False, initial=1.0)
+    exposure_bias_value = FloatField(help_text='Hint', required=False)
+    max_aperture_value = FloatField(help_text='Hint', required=False)
+
+
+
     # image_width = IntegerField(help_text='ширина изображения', required=False)
     # image_height = IntegerField(help_text='высота изображиния', required=False)
     # bits_per_sample = CharField(help_text='Hint', required=False)
@@ -85,7 +109,6 @@ class ExifEditorForm(Form):
     # primary_chromaticities = CharField(help_text='Hint', required=False)
     # matrix_coefficients = CharField(help_text='Hint', required=False)
     # reference_black_white = CharField(help_text='Hint', required=False)
-    # datetime = CharField(help_text='Hint', required=False)
     # image_description = CharField(help_text='Hint', required=False)
     # artist = CharField(help_text='Hint', required=False)
     # copyright = CharField(help_text='Hint', required=False)
@@ -102,20 +125,11 @@ class ExifEditorForm(Form):
     # iso_speed_latitude_yyy = CharField(help_text='Hint', required=False)
     # iso_speed_latitude_zzz = CharField(help_text='Hint', required=False)
     # exif_version = CharField(help_text='Hint', required=False)
-    # datetime_original = CharField(help_text='Hint', required=False)
-    # datetime_digitized = CharField(help_text='Hint', required=False)
     # offset_time = CharField(help_text='Hint', required=False)
     # offset_time_original = CharField(help_text='Hint', required=False)
     # offset_time_digitized = CharField(help_text='Hint', required=False)
     # components_configuration = CharField(help_text='Hint', required=False)
-    # compressed_bits_per_pixel = CharField(help_text='Hint', required=False)
-    # shutter_speed_value = CharField(help_text='Hint', required=False)
-    # aperture_value = CharField(help_text='Hint', required=False)
-    # brightness_value = CharField(help_text='Hint', required=False)
-    # exposure_bias_value = CharField(help_text='Hint', required=False)
-    # max_aperture_value = CharField(help_text='Hint', required=False)
     # subject_distance = CharField(help_text='Hint', required=False)
-    # metering_mode = CharField(help_text='Hint', required=False)
     # light_source = CharField(help_text='Hint', required=False)
     # flash = CharField(help_text='Hint', required=False)
     # subject_area = CharField(help_text='Hint', required=False)
@@ -146,12 +160,9 @@ class ExifEditorForm(Form):
     # focal_plane_resolution_unit = CharField(help_text='Hint', required=False)
     # subject_location = CharField(help_text='Hint', required=False)
     # exposure_index = CharField(help_text='Hint', required=False)
-    # sensing_method = CharField(help_text='Hint', required=False)
     # file_source = CharField(help_text='Hint', required=False)
     # scene_type = CharField(help_text='Hint', required=False)
     # cfa_pattern = CharField(help_text='Hint', required=False)
-    # custom_rendered = CharField(help_text='Hint', required=False)
-    # digital_zoom_ratio = CharField(help_text='Hint', required=False)
     # focal_length_in_35mm_film = CharField(help_text='Hint', required=False)
     # gain_control = CharField(help_text='Hint', required=False)
     # contrast = CharField(help_text='Hint', required=False)

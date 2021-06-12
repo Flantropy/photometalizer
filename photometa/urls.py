@@ -9,12 +9,14 @@ from .views import (
     image_meta_editor,
     image_meta_clear,
     delete_meta_for_all_user_photos,
+    about,
 )
 
 
 
 urlpatterns = [
     path('', home, name='home'),
+    path('about/', about, name='about'),
     path('upload/', ImageCreateView.as_view(), name='photo-upload'),
     path('photos/', ImageListView.as_view(), name='photos'),
     path('photos/<int:pk>/', ImageDetailView.as_view(), name='photo-detail'),
