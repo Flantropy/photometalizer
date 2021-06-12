@@ -39,9 +39,6 @@ class ImageUploadForm(ModelForm):
 
 class ExifEditorForm(Form):
     make = CharField(help_text='Hint', required=False)
-    datetime = CharField(help_text='YYYY:MM:DD HH:MM:SS',  required=False)
-    datetime_original = CharField(help_text='YYYY:MM:DD HH:MM:SS', required=False)
-    datetime_digitized = CharField(help_text='YYYY:MM:DD HH:MM:SS', required=False)
     white_balance = TypedChoiceField(
         coerce=int,
         choices=[(x.value, x.name) for x in WhiteBalance],
@@ -85,6 +82,9 @@ class ExifEditorForm(Form):
     brightness_value = FloatField(help_text='Hint', required=False, initial=1.0)
     exposure_bias_value = FloatField(help_text='Hint', required=False)
     max_aperture_value = FloatField(help_text='Hint', required=False)
+    datetime = CharField(help_text='YYYY:MM:DD HH:MM:SS',  required=False)
+    datetime_original = CharField(help_text='YYYY:MM:DD HH:MM:SS', required=False)
+    datetime_digitized = CharField(help_text='YYYY:MM:DD HH:MM:SS', required=False)
 
 
 

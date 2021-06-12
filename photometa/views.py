@@ -75,8 +75,9 @@ def image_meta_editor(request, pk):
         if form.is_valid():
             image = EXIFImage(obj.img.read())
             for key, value in form.cleaned_data.items():
-                print(f'key = {key} --- value = {value} --- type = {type(value)}')
-                image.set(key, value)
+                if value:
+                    print(f'key = {key} --- value = {value} --- type = {type(value)}')
+                    image.set(key, value)
 
             write_image_with_new_meta(request, image)
             obj.delete()
@@ -102,8 +103,8 @@ def image_meta_clear(request, pk):
         safe_clear(image)
         write_image_with_new_meta(request, image)
         obj.delete()
-    except:
-        messages.warning(request, 'Что-то пошло не так')
+    except Exception as e:
+        messages.warning(request, f'Что-то пошло не так. {e.__class__}')
     else:
         messages.success(request, 'Метаданные удалены')
     return redirect('photos')
