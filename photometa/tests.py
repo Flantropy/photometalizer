@@ -18,9 +18,9 @@ class TestExif(TestCase):
         self.image = EXIFImage(self.obj.img.read())
 
     def test_has_exif(self):
-        # l = self.image.list_all()
-        # for v in l:
-        #     print(type(self.image.get(v)), v, self.image.get(v))
+        l = self.image.list_all()
+        for v in l:
+            print(type(self.image.get(v)), v, self.image.get(v))
         self.assertTrue(self.image.has_exif)
 
     def test_clear_exif(self):

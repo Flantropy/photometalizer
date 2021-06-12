@@ -4,7 +4,12 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.forms import Form, ModelForm, FileInput
 from django.forms.fields import *
 from .models import Image
-from exif import WhiteBalance
+from exif import (
+    WhiteBalance,
+    ColorSpace,
+    ExposureMode,
+    SceneCaptureType,
+)
 
 
 def validate_image_size(image: InMemoryUploadedFile):
@@ -37,6 +42,24 @@ class ExifEditorForm(Form):
     white_balance = TypedChoiceField(
         coerce=int,
         choices=[(x.value, x.name) for x in WhiteBalance],
+        help_text='Баланс белого',
+        required=False)
+    model = CharField(help_text='Hint', required=False)
+    software = CharField(help_text='Hint', required=False)
+    focal_length = FloatField(help_text='Фокусное расстояние', required=False)
+    color_space = TypedChoiceField(
+        coerce=int,
+        choices=[(x.value, x.name) for x in ColorSpace],
+        help_text='Hint',
+        required=False)
+    exposure_mode = TypedChoiceField(
+        coerce=int,
+        choices=[(x.value, x.name) for x in ExposureMode],
+        help_text='Hint',
+        required=False)
+    scene_capture_type = TypedChoiceField(
+        coerce=int,
+        choices=[(x.value, x.name) for x in SceneCaptureType],
         help_text='Hint',
         required=False)
     # x_resolution = FloatField(help_text='Hint', required=False)
@@ -64,8 +87,6 @@ class ExifEditorForm(Form):
     # reference_black_white = CharField(help_text='Hint', required=False)
     # datetime = CharField(help_text='Hint', required=False)
     # image_description = CharField(help_text='Hint', required=False)
-    # model = CharField(help_text='Hint', required=False)
-    # software = CharField(help_text='Hint', required=False)
     # artist = CharField(help_text='Hint', required=False)
     # copyright = CharField(help_text='Hint', required=False)
     # exposure_time = CharField(help_text='Hint', required=False)
@@ -97,7 +118,6 @@ class ExifEditorForm(Form):
     # metering_mode = CharField(help_text='Hint', required=False)
     # light_source = CharField(help_text='Hint', required=False)
     # flash = CharField(help_text='Hint', required=False)
-    # focal_length = CharField(help_text='Hint', required=False)
     # subject_area = CharField(help_text='Hint', required=False)
     # maker_note = CharField(help_text='Hint', required=False)
     # user_comment = CharField(help_text='Hint', required=False)
@@ -116,7 +136,6 @@ class ExifEditorForm(Form):
     # xp_keywords = CharField(help_text='Hint', required=False)
     # xp_subject = CharField(help_text='Hint', required=False)
     # flashpix_version = CharField(help_text='Hint', required=False)
-    # color_space = CharField(help_text='Hint', required=False)
     # pixel_x_dimension = CharField(help_text='Hint', required=False)
     # pixel_y_dimension = CharField(help_text='Hint', required=False)
     # related_sound_file = CharField(help_text='Hint', required=False)
@@ -132,10 +151,8 @@ class ExifEditorForm(Form):
     # scene_type = CharField(help_text='Hint', required=False)
     # cfa_pattern = CharField(help_text='Hint', required=False)
     # custom_rendered = CharField(help_text='Hint', required=False)
-    # exposure_mode = CharField(help_text='Hint', required=False)
     # digital_zoom_ratio = CharField(help_text='Hint', required=False)
     # focal_length_in_35mm_film = CharField(help_text='Hint', required=False)
-    # scene_capture_type = CharField(help_text='Hint', required=False)
     # gain_control = CharField(help_text='Hint', required=False)
     # contrast = CharField(help_text='Hint', required=False)
     # saturation = CharField(help_text='Hint', required=False)
