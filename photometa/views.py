@@ -1,9 +1,7 @@
-from django import forms
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.core.files.base import ContentFile
 from django.views.generic import (
     ListView,
     DetailView,
@@ -13,7 +11,7 @@ from django.views.generic import (
 from exif import Image as EXIFImage
 from .models import Image
 from .forms import ImageUploadForm, ExifEditorForm
-from .utils import get_exif, safe_clear
+from .utils import get_exif, safe_clear, write_image_with_new_meta
 
 
 def home(request):
@@ -55,51 +53,34 @@ class ImageDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def image_meta(request, pk):
-    # TODO Generalize logic of working with files and retrieving/setting exif
     obj = Image.objects.get(pk=pk)
     exif = get_exif(obj)
     context = {
         'photo': obj,
-        'exif': exif.items(),
+        'exif': exif.items()
     }
     return render(request, 'photometa/image_meta.html', context)
 
 
 def image_meta_editor(request, pk):
-    # TODO write a function to get initial values from existing image exif
-    form = ExifEditorForm(
-        initial={
-            'make': 'initmake',
-            'white_balance': 0,
-            'software': 'initsoft'
-        }
-    )
+    obj = Image.objects.get(pk=pk)
     if request.method == 'POST':
         form = ExifEditorForm(request.POST)
-        obj = Image.objects.get(pk=pk)
-        image = EXIFImage(obj.img.read())
         if form.is_valid():
+            image = EXIFImage(obj.img.read())
             for key, value in form.cleaned_data.items():
-                print(f'key = {key} --- value = {value}')
-                try:
-                    print(image.list_all())
-                    image.set(key, value)
-                except:
-                    print('smtww')
+                print(f'key = {key} --- value = {value} --- type = {type(value)}')
+                image.set(key, value)
 
-            try:
-                new_file = image.get_file()
-                new_obj = Image()
-                new_obj.owner = request.user
-                new_obj.img.save(name='new_image.jpg', content=ContentFile(new_file))
-                new_obj.save()
-                obj.delete()
-            except Exception as e:
-                messages.warning(request, 'fail')
-                print(e, e.__class__)
-            else:
-                messages.success(request, 'edited!')
-                return redirect('photos')
+            write_image_with_new_meta(request, image)
+            obj.delete()
+            messages.success(request, 'Данные успешно отредактированы')
+            return redirect('photos')
+    else:
+        form = ExifEditorForm()
+        initial_dirty = get_exif(obj)
+        initial_cleaned = {k: v for k, v in initial_dirty.items() if k in form.declared_fields}
+        form.initial = {**initial_cleaned}
 
     context = {
         'form': form,
@@ -113,11 +94,7 @@ def image_meta_clear(request, pk):
         photo = obj.img.read()
         image = EXIFImage(photo)
         safe_clear(image)
-        new_file = image.get_file()
-        new_obj = Image()
-        new_obj.owner = request.user
-        new_obj.img.save(name='new_image.jpg', content=ContentFile(new_file))
-        new_obj.save()
+        write_image_with_new_meta(request, image)
         obj.delete()
     except:
         messages.warning(request, 'Что-то пошло не так')

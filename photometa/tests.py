@@ -1,10 +1,9 @@
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, SimpleTestCase
+from django.test import TestCase
 from exif import Image as EXIFImage, WhiteBalance
+from photometa.utils import safe_clear
 from .models import Image
-from .forms import ExifEditorForm
-from exif import _app1_create
 
 
 class TestExif(TestCase):
@@ -41,8 +40,12 @@ class TestExif(TestCase):
         self.image.white_balance = 1
         self.assertEqual(self.image.white_balance, WhiteBalance.MANUAL)
 
-    def test_adding_tags_to_cleaned_image(self):
-        # safe clean
-        [self.image.delete(atr) for atr in self.image.list_all()]
+    def test_adding_tag_to_cleaned_image(self):
+        safe_clear(self.image)
         self.image.make = 'python'
         self.assertEqual(self.image.make, 'python')
+
+    def test_adding_special_tag_to_cleaned_image(self):
+        safe_clear(self.image)
+        self.image.white_balance = 1
+        self.assertEqual(self.image.white_balance, WhiteBalance.MANUAL)

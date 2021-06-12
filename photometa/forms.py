@@ -4,7 +4,6 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.forms import Form, ModelForm, FileInput
 from django.forms.fields import *
 from .models import Image
-from .utils import get_all_exif_tags
 from exif import WhiteBalance
 
 
@@ -34,13 +33,16 @@ class ImageUploadForm(ModelForm):
 
 
 class ExifEditorForm(Form):
-
     make = CharField(help_text='Hint', required=False)
-    white_balance = ChoiceField(choices=[(x.value, x.name) for x in WhiteBalance],
-                                help_text='Hint',
-                                required=False)
-    # image_width = CharField(help_text='Hint', required=False)
-    # image_height = CharField(help_text='Hint', required=False)
+    white_balance = TypedChoiceField(
+        coerce=int,
+        choices=[(x.value, x.name) for x in WhiteBalance],
+        help_text='Hint',
+        required=False)
+    # x_resolution = FloatField(help_text='Hint', required=False)
+    # y_resolution = FloatField(help_text='Hint', required=False)
+    # image_width = IntegerField(help_text='ширина изображения', required=False)
+    # image_height = IntegerField(help_text='высота изображиния', required=False)
     # bits_per_sample = CharField(help_text='Hint', required=False)
     # compression = CharField(help_text='Hint', required=False)
     # photometric_interpretation = CharField(help_text='Hint', required=False)
@@ -49,8 +51,6 @@ class ExifEditorForm(Form):
     # planar_configuration = CharField(help_text='Hint', required=False)
     # subsampling_ratio_of_y_to_c = CharField(help_text='Hint', required=False)
     # y_and_c_positioning = CharField(help_text='Hint', required=False)
-    # x_resolution = CharField(help_text='Hint', required=False)
-    # y_resolution = CharField(help_text='Hint', required=False)
     # resolution_unit = CharField(help_text='Hint', required=False)
     # strip_offsets = CharField(help_text='Hint', required=False)
     # rows_per_strip = CharField(help_text='Hint', required=False)
