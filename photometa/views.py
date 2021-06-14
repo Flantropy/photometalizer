@@ -1,5 +1,9 @@
+import os
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -18,6 +22,7 @@ from .utils import get_exif, safe_clear, write_image_with_new_meta
 
 def home(request):
     return render(request, 'photometa/home.html')
+
 
 def about(request):
     return render(request, 'photometa/about.html')
@@ -121,3 +126,14 @@ def delete_meta_for_all_user_photos(request):
 
     messages.success(request, 'Метаданные удалены на всех ваших фото')
     return redirect('photos')
+
+
+def download(request, pk):
+    obj = Image.objects.get(pk=pk)
+    file_path = os.path.join(settings.MEDIA_ROOT, obj.img.path)
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type="application/adminupload")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
