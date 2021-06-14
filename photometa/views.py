@@ -1,6 +1,3 @@
-import os
-
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse
@@ -130,10 +127,6 @@ def delete_meta_for_all_user_photos(request):
 
 def download(request, pk):
     obj = Image.objects.get(pk=pk)
-    file_path = os.path.join(settings.MEDIA_ROOT, obj.img.path)
-    if os.path.exists(file_path):
-        with open(file_path, 'rb') as f:
-            response = HttpResponse(f.read(), content_type="application/adminupload")
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
-            return response
-    raise Http404
+    response = HttpResponse(obj.img.read(), content_type="file/force-download")
+    response['Content-Disposition'] = f'inline; filename={obj.img}'
+    return response
