@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -42,9 +42,14 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
     template_name = 'photometa/image_upload.html'
 
     def form_valid(self, form):
-        form.instance.owner = self.request.user
-        messages.success(self.request, 'Фото добавлено')
-        return super().form_valid(form)
+        files = self.request.FILES.getlist('img')
+        for file in files:
+            photo = Image(owner=self.request.user, img=file)
+            photo.save()
+        return redirect('photos')
+        # form.instance.owner = self.request.user
+        # messages.success(self.request, 'Фото добавлено')
+        # return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.warning(self.request, form.errors['img'])
@@ -78,7 +83,6 @@ def image_meta_editor(request, pk):
             image = EXIFImage(obj.img.read())
             for key, value in form.cleaned_data.items():
                 if value:
-                    print(f'key = {key} --- value = {value} --- type = {type(value)}')
                     image.set(key, value)
 
             write_image_with_new_meta(request, image)
