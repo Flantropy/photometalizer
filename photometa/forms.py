@@ -1,15 +1,20 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.forms import Form, ModelForm, FileInput, DateTimeInput
+from django.forms import Form, ModelForm, FileInput
 from django.forms.fields import *
+
+from captcha.fields import CaptchaField
 from .models import Image
+
 from exif import (
     WhiteBalance,
     ColorSpace,
     ExposureMode,
     SceneCaptureType,
-    SensingMethod, MeteringMode)
+    SensingMethod,
+    MeteringMode,
+)
 
 
 def validate_image_size(image: InMemoryUploadedFile):
@@ -22,6 +27,7 @@ def validate_image_size(image: InMemoryUploadedFile):
 
 class ImageUploadForm(ModelForm):
     ALLOWED_EXTENSIONS = ['jpg', 'jpeg']
+    captcha = CaptchaField(label='')
     img = ImageField(
         label='Фото',
         widget=FileInput(attrs={'multiple': True}),

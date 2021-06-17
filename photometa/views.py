@@ -47,12 +47,9 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
             photo = Image(owner=self.request.user, img=file)
             photo.save()
         return redirect('photos')
-        # form.instance.owner = self.request.user
-        # messages.success(self.request, 'Фото добавлено')
-        # return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.warning(self.request, form.errors['img'])
+        messages.warning(self.request, form.errors)
         return super().form_invalid(form)
 
 
@@ -78,7 +75,7 @@ def image_meta(request, pk):
 def image_meta_editor(request, pk):
     obj = Image.objects.get(pk=pk)
     if request.method == 'POST':
-        form = ExifEditorForm(request.POST)
+        form = ExifEditorForm(request.POST, request.FILES)
         if form.is_valid():
             image = EXIFImage(obj.img.read())
             for key, value in form.cleaned_data.items():

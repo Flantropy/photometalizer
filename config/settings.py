@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     'storages',
     'crispy_forms',
+    'captcha',
 
     'photometa.apps.PhotometaConfig',
     'users.apps.UsersConfig',
@@ -115,5 +116,10 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+
+CAPTCHA_LETTER_ROTATION = (-20, 20)
+CAPTCHA_BACKGROUND_COLOR = '#2F2F30'
+CAPTCHA_FOREGROUND_COLOR = '#FFFFFF'
+CAPTCHA_NOISE_FUNCTIONS = ['captcha.helpers.noise_dots']
 
 django_heroku.settings(locals())
